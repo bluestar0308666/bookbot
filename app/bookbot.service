@@ -1,0 +1,21 @@
+[Unit]
+Description=BookBot Private Reader
+After=network.target
+
+[Service]
+Type=simple
+User=__BOOKBOT_USER__
+EnvironmentFile=/etc/bookbot.env
+ExecStart=/usr/bin/python3 /opt/bookbot/app/server_readonly.py --host 127.0.0.1 --port 13011 --directory /opt/bookbot/library --data /opt/bookbot/data
+Restart=always
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/bookbot/data /opt/bookbot/backups /opt/bookbot/library
+ReadOnlyPaths=/opt/bookbot/app
+
+[Install]
+WantedBy=multi-user.target

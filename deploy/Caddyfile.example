@@ -1,0 +1,12 @@
+books.example.com {
+    basicauth {
+        reader REPLACE_WITH_CADDY_PASSWORD_HASH
+    }
+
+    @publish path /api/publish/*
+    handle @publish {
+        reverse_proxy 127.0.0.1:13011
+    }
+
+    reverse_proxy 127.0.0.1:13011
+}

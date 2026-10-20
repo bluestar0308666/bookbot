@@ -1,0 +1,5 @@
+{
+  "serverBase": "https://books.example.com",
+  "publishToken": "",
+  "chunkBytes": 4194304
+}

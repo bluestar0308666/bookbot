@@ -1,0 +1,14 @@
+{
+  "name": "一页 · 私人图书馆",
+  "short_name": "一页书房",
+  "description": "大型书籍处理、书架、多标签和分屏阅读工作台",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f0e8",
+  "theme_color": "#2e6048",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

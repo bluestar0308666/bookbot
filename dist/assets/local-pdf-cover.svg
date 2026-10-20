@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 900" role="img" aria-label="本机 PDF">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7f4ed"/>
+      <stop offset="1" stop-color="#ded8cc"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="900" rx="22" fill="url(#paper)"/>
+  <rect x="74" y="74" width="492" height="752" rx="12" fill="#fffdf8" stroke="#cfc8ba" stroke-width="3"/>
+  <circle cx="138" cy="133" r="11" fill="#ed6a5e"/>
+  <circle cx="174" cy="133" r="11" fill="#f4bf4f"/>
+  <circle cx="210" cy="133" r="11" fill="#61c454"/>
+  <path d="M151 238h338M151 285h240M151 465h338M151 512h294M151 559h316" stroke="#d8d3c9" stroke-width="16" stroke-linecap="round"/>
+  <rect x="151" y="338" width="182" height="66" rx="33" fill="#2e6048"/>
+  <text x="242" y="381" text-anchor="middle" font-family="system-ui,sans-serif" font-size="34" font-weight="700" fill="white">PDF</text>
+  <text x="320" y="724" text-anchor="middle" font-family="system-ui,sans-serif" font-size="26" font-weight="650" fill="#2e6048">本机直接阅读</text>
+</svg>

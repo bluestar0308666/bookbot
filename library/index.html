@@ -1,0 +1,114 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <title>一页 · 私人阅读工作台</title>
+    <meta name="description" content="大型书籍的私人书架、多窗口与分屏阅读工作台。" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css?v=1.0.1" />
+  </head>
+  <body>
+    <main id="homeView" class="home-view">
+      <header class="home-header">
+        <div><p class="eyebrow">PRIVATE READING WORKSPACE</p><h1>一页</h1><p class="subtitle">让打开一本书，比产生读书的念头更容易。</p></div>
+        <div class="home-actions"><button id="dataButton" class="secondary-button">数据</button><button id="directPdfButton" class="primary-button">打开本机 PDF</button><button id="importBookButton" class="secondary-button">生成流式版本</button><button id="aboutButton" class="icon-button" aria-label="关于阅读工作台">?</button></div>
+      </header>
+      <input id="bookFileInput" type="file" accept="application/pdf,.pdf" hidden />
+      <section id="processingPanel" class="processing-panel" aria-live="polite">
+        <button id="dropZone" class="drop-zone"><span class="drop-icon">⇧</span><span><strong>生成流式阅读版本</strong><small>需要跨设备阅读时使用；也可把 PDF 拖到这里</small></span></button>
+        <div class="task-status"><span id="statusDot" class="status-dot idle"></span><div class="status-copy"><strong id="statusTitle">书籍助手准备就绪</strong><small id="statusDetail">等待导入新书</small><progress id="statusProgress" max="100" value="0" hidden></progress></div><span id="diskStatus" class="disk-status"></span></div>
+      </section>
+      <section class="section-heading"><div><p class="overline">CONTINUE</p><h2>继续阅读</h2></div><span id="libraryCount" class="count-chip">1 本书</span></section>
+      <section class="library-tools"><label class="search-box library-search"><span>⌕</span><input id="librarySearch" type="search" placeholder="搜索书名、章节或标签" autocomplete="off" /></label><div id="tagFilters" class="tag-filters" aria-label="按标签筛选"></div></section>
+      <div id="continueShelf" class="book-shelf"></div>
+      <nav id="libraryPagination" class="library-pagination" aria-label="书架分页"></nav>
+      <section class="workspace-tip"><span class="principle-mark">Δ</span><div><h2>把开始的阻力降到最低</h2><p>多标签保留不同阅读现场，分屏帮助你在正文、目录和其他书之间对照。</p></div></section>
+      <p class="prototype-note">私人书库 · 书籍页面与个人阅读数据分开存储</p>
+      <aside id="workTimerWidget" class="work-timer" aria-label="工作计时">
+        <button id="closeWorkTimerButton" class="stats-close" aria-label="关闭工作计时">×</button>
+        <div class="work-timer-copy"><small>FOCUS TIMER</small><strong id="workTimerValue">今日不足 1 分钟</strong><span>工作时间与阅读时间分开统计</span></div>
+        <button id="workTimerToggle" class="primary-button">开始专注</button>
+        <div class="work-summary"><span>本周 <b id="workWeekTotal">不足 1 分钟</b></span><span>本月 <b id="workMonthTotal">不足 1 分钟</b></span></div>
+        <button id="syncStatus" class="sync-status local" type="button" title="点击重新同步"><span class="sync-status-dot"></span><span id="syncStatusText">正在检查保存状态</span></button>
+      </aside>
+      <button id="workTimerRestoreButton" class="work-timer-restore" hidden>◷ 工作计时</button>
+    </main>
+
+    <main id="readerView" class="reader-view" hidden>
+      <header class="reader-header">
+        <button id="backButton" class="icon-button" aria-label="返回书架">←</button>
+        <nav id="readerTabs" class="reader-tabs" aria-label="打开的阅读标签"></nav>
+        <button id="newTabButton" class="header-action" aria-label="新建阅读标签">＋</button>
+        <button id="splitButton" class="header-action" aria-pressed="false">分屏</button>
+        <button id="readerLibraryButton" class="header-action" aria-expanded="false" title="书架：按住书拖到窗格">书架</button>
+        <button id="settingsButton" class="header-action settings-button" aria-label="阅读外观设置">Aa</button>
+        <button id="tocButton" class="icon-button" aria-label="打开当前窗格目录">☰</button>
+      </header>
+      <section id="readerShelf" class="reader-shelf" hidden aria-label="阅读书架">
+        <header class="reader-shelf-head"><div><p class="eyebrow">DRAG A BOOK INTO A PANE</p><strong>按住书拖到左侧/右侧窗格；点一下放入当前窗格</strong></div><button id="closeReaderShelf" class="icon-button" type="button" aria-label="关闭书架">×</button></header>
+        <div id="readerShelfList" class="reader-shelf-list"></div>
+      </section>
+      <div id="mobilePaneSwitch" class="mobile-pane-switch" hidden><button data-pane="0" class="active">窗格一</button><button data-pane="1">窗格二</button></div>
+      <section id="workspace" class="workspace single" aria-live="polite"></section>
+      <aside id="annotationTools" class="annotation-tools" aria-label="页面标注工具">
+        <button id="closeAnnotationTools" class="annotation-tools-close" type="button" aria-label="收起页面标注工具">×</button>
+        <div class="annotation-tools-head"><span>页面标注</span><small id="annotationToolStatus">再次点击可取消</small></div>
+        <div class="annotation-tool-list">
+          <button type="button" data-annotation-tool="highlight" aria-pressed="false" title="在书页上拖动高亮"><span aria-hidden="true">✎</span><b>高亮</b></button>
+          <button type="button" data-annotation-tool="erase" aria-pressed="false" title="点击已有高亮或标记即可删除"><span aria-hidden="true">◇</span><b>擦除</b></button>
+          <button type="button" data-annotation-tool="marker" aria-pressed="false" title="点击书页放置一枚页边批注"><span aria-hidden="true">＋</span><b>标记</b></button>
+        </div>
+      </aside>
+      <button id="annotationToolsRestore" class="annotation-tools-restore" type="button" hidden><span aria-hidden="true"></span> 标注</button>
+      <footer class="reader-footer">
+        <button id="footerTocButton" class="footer-action">目录</button><button id="previousPage" class="footer-action">上一页</button>
+        <div class="page-control"><input id="pageSlider" type="range" min="1" max="957" value="1" aria-label="当前窗格快速跳转页码" /><button id="pageNumberButton" class="page-number"><span id="currentPage">1</span> / <span id="totalPages">957</span></button></div>
+        <button id="nextPage" class="footer-action">下一页</button><button id="notesButton" class="footer-action note-action">笔记</button><button id="setProgressButton" class="footer-action emphasis">记为进度</button>
+      </footer>
+      <aside id="readingStatsWidget" class="reading-stats" aria-label="阅读统计">
+        <button id="statsMainButton" class="stats-main" aria-expanded="false"><span class="stats-progress"><strong id="statsProgress">0%</strong><small>本书</small></span><span class="stats-primary"><small id="statsBook">当前书籍</small><strong>今日 <span id="statsToday">不足 1 分钟</span></strong></span><span class="stats-chevron">⌃</span></button>
+        <button id="closeStatsButton" class="stats-close" aria-label="关闭阅读统计">×</button>
+        <div id="statsDetails" class="stats-details" hidden><div><small>本周</small><strong id="statsWeek">0 分钟</strong></div><div><small>本月</small><strong id="statsMonth">0 分钟</strong></div><div><small>实际读过</small><strong id="statsPages">0 页</strong></div></div>
+      </aside>
+      <button id="statsRestoreButton" class="stats-restore" hidden>◷ 阅读统计</button>
+    </main>
+
+    <div id="tocBackdrop" class="backdrop" hidden></div>
+    <aside id="tocPanel" class="toc-panel" aria-label="当前窗格目录" aria-hidden="true">
+      <header class="toc-header"><div><p class="eyebrow">BOOK OUTLINE</p><h2 id="tocBookTitle">结构提纲</h2></div><button id="closeTocButton" class="icon-button" aria-label="关闭目录">×</button></header>
+      <label class="search-box"><span>⌕</span><input id="tocSearch" type="search" placeholder="搜索章节" autocomplete="off" /></label><div id="tocList" class="toc-list"></div>
+    </aside>
+
+    <div id="notesBackdrop" class="backdrop" hidden></div>
+    <aside id="notesPanel" class="notes-panel" aria-label="阅读笔记" aria-hidden="true">
+      <header class="notes-header"><div><p class="eyebrow">READING NOTES</p><h2>这一页的笔记</h2></div><button id="closeNotesButton" class="icon-button" aria-label="关闭笔记">×</button></header>
+      <p id="noteContext" class="note-context"></p>
+      <div class="bookmark-heading"><span>本书书签</span><small>点击以单页精确打开</small></div><div id="bookmarksList" class="bookmark-list"></div>
+      <div class="bookmark-heading"><span>本书高亮索引</span><small id="highlightIndexSummary">按页归纳</small></div><div id="highlightNotesList" class="highlight-note-list"></div>
+      <label class="note-field"><span>笔记内容</span><textarea id="noteText" rows="7" placeholder="记下疑问、理解或下一步要查的内容……"></textarea></label>
+      <label class="note-field"><span>标签</span><input id="noteTags" type="text" placeholder="例如：肿瘤生物学, 待复习（用逗号分隔）" /></label>
+      <div class="note-actions"><button id="deleteNoteButton" class="secondary-button danger" hidden>删除本页笔记</button><button id="saveNoteButton" class="primary-button">保存笔记</button></div>
+      <div class="notes-divider"><span>本书笔记</span></div><label class="search-box note-search"><span>⌕</span><input id="noteSearch" type="search" placeholder="搜索本书笔记或标签" autocomplete="off" /></label><div id="notesList" class="notes-list"></div>
+    </aside>
+
+    <dialog id="pageDialog" class="page-dialog"><form method="dialog"><label for="pageInput">跳转到当前书的 PDF 页码</label><input id="pageInput" type="number" min="1" inputmode="numeric" /><div class="dialog-actions"><button value="cancel" class="secondary-button">取消</button><button id="jumpButton" value="default" class="primary-button">临时查看</button></div></form></dialog>
+    <dialog id="bookDialog" class="book-dialog"><form method="dialog"><button class="dialog-close" aria-label="关闭">×</button><p class="eyebrow">CHOOSE A BOOK</p><h2>这个窗格打开哪本书？</h2><div id="bookChoices" class="book-choices"></div></form></dialog>
+    <dialog id="settingsDialog" class="settings-dialog"><form method="dialog"><button class="dialog-close" aria-label="关闭">×</button><p class="eyebrow">READING APPEARANCE</p><h2>阅读外观</h2><fieldset><legend>阅读模式</legend><div class="theme-options"><button type="button" data-theme-option="light">明亮</button><button type="button" data-theme-option="sepia">护眼</button><button type="button" data-theme-option="dark">夜间</button></div></fieldset><label class="setting-range"><span>页面大小 <output id="pageScaleValue">100%</output></span><input id="pageScale" type="range" min="75" max="150" step="5" value="100" /></label><label class="setting-range"><span>界面文字 <output id="uiScaleValue">100%</output></span><input id="uiScale" type="range" min="90" max="125" step="5" value="100" /></label><p class="settings-hint">设置只保存在这台设备上，下次打开会自动恢复。</p></form></dialog>
+    <dialog id="dataDialog" class="data-dialog"><form method="dialog"><button class="dialog-close" aria-label="关闭">×</button><p class="eyebrow">YOUR READING DATA</p><h2>阅读数据</h2><p id="dataSummary" class="data-summary"></p><div class="data-actions"><button id="exportNotesButton" type="button" class="secondary-button">导出笔记 Markdown</button><button id="exportBackupButton" type="button" class="primary-button">备份全部数据</button><button id="importBackupButton" type="button" class="secondary-button">恢复备份</button><input id="backupFileInput" type="file" accept="application/json,.json" hidden /></div><p class="settings-hint">备份包含笔记、书签、标签、阅读进度、最近阅读、外观和窗口状态，不包含书籍页面文件。</p></form></dialog>
+    <dialog id="manageBookDialog" class="manage-book-dialog"><form method="dialog"><button class="dialog-close" aria-label="关闭">×</button><p class="eyebrow">LIBRARY MANAGEMENT</p><h2 id="manageBookTitle">管理书籍</h2><p id="manageBookSummary" class="data-summary"></p><div class="manage-warning"><strong>安全边界</strong><span>移除只删除阅读器生成的轻量页面，原始 PDF 会保留。</span></div><button id="removeBookButton" type="button" class="secondary-button danger wide-button">从书架移除并释放空间</button><p id="manageBookHint" class="settings-hint"></p></form></dialog>
+    <dialog id="aboutDialog" class="about-dialog"><form method="dialog"><button class="dialog-close" aria-label="关闭">×</button><p class="eyebrow">WORKSPACE 02</p><h2>阅读现场，不必只有一个</h2><p>标签页用于保留多组阅读现场；分屏中的两个窗格互不干扰，可以打开同一本书的不同位置，也可以打开两本不同的书。阅读页点“书架”，按住一本书拖到左侧或右侧窗格即可换书。</p><p id="appVersionLine" class="settings-hint"></p><div class="data-actions"><button id="installAppButton" type="button" class="primary-button">安装为桌面应用</button></div><p id="installAppHint" class="settings-hint">安装后可以像普通软件一样从开始菜单或桌面启动；运行前需要本地 BookBot 服务已启动。</p></form></dialog>
+    <aside id="highlightEditor" class="highlight-editor" hidden aria-label="高亮笔记编辑器">
+      <div class="highlight-editor-head"><strong>高亮笔记</strong><button id="closeHighlightEditor" type="button" aria-label="关闭">×</button></div>
+      <div id="highlightColors" class="highlight-colors" aria-label="高亮颜色"><button type="button" data-highlight-color="#f4d35e" aria-label="黄色"></button><button type="button" data-highlight-color="#86d39a" aria-label="绿色"></button><button type="button" data-highlight-color="#f29ab2" aria-label="粉色"></button></div>
+      <textarea id="highlightNoteText" rows="4" placeholder="给这处高亮写一句批注……"></textarea>
+      <div class="highlight-editor-actions"><button id="deleteHighlight" type="button" class="secondary-button danger">删除高亮</button><button id="saveHighlightNote" type="button" class="primary-button">保存批注</button></div>
+    </aside>
+    <div id="highlightTooltip" class="highlight-tooltip" hidden></div>
+    <script src="app.js?v=1.0.4" defer></script>
+  </body>
+</html>
